@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sladrespeilet - Journalistportal</title>
+    <style>
+        :root {
+            --primary-color: #1a4b8c;
+            --secondary-color: #e63946;
+            --bg-color: #f8f9fa;
+            --dark-bg: #2c3e50;
+            --light-text: #f8f9fa;
+            --dark-text: #333;
+            --border-color: #ddd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+        
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .welcome-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .welcome-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .welcome-container p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .welcome-container input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .welcome-container button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .welcome-container button:hover {
+            background-color: #c52f3a;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+        
+        .user-welcome {
+            font-size: 1rem;
+        }
+        
+        .main-container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .content-area h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .case-editor {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .case-editor textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .case-editor button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .case-editor button:hover {
+            background-color: #0f3a6f;
+        }
+        
+        .case-content {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .case-content p {
+            line-height: 1.8;
+        }
+        
+        .sidebar {
+            width: 350px;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 1.5rem;
+            overflow-y: auto;
+            border-left: 1px solid var(--border-color);
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .source-list {
+            margin-bottom: 2rem;
+        }
+        
+        .source-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 0.8rem;
+            padding: 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .source-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .source-item h4 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .source-item p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+        
+        .source-item a {
+            color: #4ecdc4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        
+        .source-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .add-source {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        
+        .add-source h3 {
+            margin-bottom: 1rem;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .add-source input, .add-source textarea {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: var(--dark-text);
+        }
+        
+        .add-source textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .add-source button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .add-source button:hover {
+            background-color: #c52f3a;
+        }
+        
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome screen (first visit) -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-container">
+            <h2>Velkommen til Sladrespeilet</h2>
+            <p>Skriv inn navnet ditt for å fortsette til journalistportalen:</p>
+            <input type="text" id="nameInput" placeholder="Ditt navn">
+            <button id="startButton">Start</button>
+        </div>
+    </div>
+    
+    <!-- Main application -->
+    <header class="header">
+        <div class="logo">
+            <img src="C:\Users\benjae-nes\Downloads\sladrespeilet-logo.png" alt="Sladrespeilet logo">
+            <!-- Hvis du vil beholde teksten ved siden av logoen, behold h1-taggen under -->
+            <!-- Hvis du bare vil ha logo, fjern h1-taggen -->
+            <h1>Sladrespeilet</h1>
+        </div>
+        <div class="user-welcome" id="userWelcome">Velkommen, Journalist</div>
+    </header>
+    
+    <div class="main-container">
+        <div class="content-area">
+            <h2>Dagens sak</h2>
+            <div class="case-content" id="caseContent">
+                <!-- REDIGER SAKEN HER -->
+                <p>I kommunen planlegges det en ny ungdomsklubb kalt "Møteplassen" i den gamle brannstasjonen i sentrum.</p>
+                <p>Dette har skapt debatt i lokalmiljøet der både ungdom, politikere og naboer har ulike meninger og interesser.</p>
+                <p>Bruk kildene til høyre for å sette deg inn i saken, og skrive en tekst.</p>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <h3>Tilgjengelige kilder</h3>
+            <div class="source-list" id="sourceList">
+                <!-- REDIGER KILDENE HER -->
+                <!-- Eksempel på kilde (kopier dette formatet for å legge til flere kilder): -->
+                <div class="source-item">
+                    <h4>Intervju med ordføreren</h4>
+                    <p>Ordføreren blir stilt spørsmål rundt planene om ny ungdomsklubb.</p>
+                    <a href="https://digirom-my.sharepoint.com/personal/joachim_finstad_eklund_nes_kommune_no/_layouts/15/stream.aspx?id=%2Fpersonal%2Fjoachim%5Ffinstad%5Feklund%5Fnes%5Fkommune%5Fno%2FDocuments%2FChatfiler%20for%20Microsoft%20Teams%2F20250227%5F102424018%5FiOS%201%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E6db75f3a%2D18b2%2D418f%2Db4fb%2D49971cab16b6&isDarkMode=false" target="_blank" download>Last ned</a>
+                </div>
+                
+                <div class="source-item">
+                    <h4>Byggteknisk rapport</h4>
+                    <p>Vurdering av gjennomføring av prosjektet i brannstasjonen.</p>
+                    <a href="https://1drv.ms/b/c/676e48f348ad513c/ER3GEwd6xx5EqTR66dMYA68BD9C95leLe4DXRs4y5QpsFg?e=coAVnd" target="_blank" download>Last ned</a>
+                </div>
+                
+                <div class="source-item">
+                    <h4>Kommentarfelt fra sosiale medier</h4>
+                    <p>Utklipp av et kommentarfelt på Facebook som handler om saken.</p>
+                    <a href="https://1drv.ms/i/c/676e48f348ad513c/ERhJVMPZ2HZOvdX9FfALTu4BrditrcLgudyvMORQjpMQsg?e=CFQgVv" target="_blank" download>Last ned</a>
+                </div>
+                
+                <div class="source-item">
+                    <h4>E-post til redaksjonen</h4>
+                    <p>En e-post sendt til oss fra en leser.</p>
+                    <a href="https://1drv.ms/b/c/676e48f348ad513c/EXnsDKBCTo1Plv2N9ohehlABw92os5kwr41ICWp0K-GTPg?e=yXnXXa" target="_blank" download>Last ned</a>
+                </div>
+
+                <div class="source-item">
+                    <h4>Rettelse om illustrasjon</h4>
+                    <p>Oppklaring av vår bruk av misvisende bilde i en sak.</p>
+                    <a href="https://1drv.ms/b/c/676e48f348ad513c/ESgxklcejnFPpcT01J8i_eMBEw0ymBO-QLnvUb5wA1cwZw?e=79R64g" target="_blank" download>Last ned</a>
+                </div>
+
+                <div class="source-item">
+                    <h4>Telefonintervju med nabo</h4>
+                    <p>Lydklipp fra et intervju med en nabo til brannstasjonen.</p>
+                    <a href="https://1drv.ms/u/c/676e48f348ad513c/Ed1qMGyXjqRAgcMa9HJWO3UBeUAV0mORNS5OWVuVDYSkZQ?e=SL3QYE" target="_blank" download>Last ned</a>
+                </div>
+
+                <div class="source-item">
+                    <h4>Leserinnlegg: Jonas</h4>
+                    <p>Leserinnlegg om saken.</p>
+                    <a href="https://1drv.ms/b/c/676e48f348ad513c/EQeqyXUlrpJCpie_9X4MSeEBkPZHm2n9vxaW3eE3Q9o6ow?e=bIWpna" target="_blank" download>Last ned</a>
+                </div>
+
+                <div class="source-item">
+                    <h4>Leserinnlegg: Emma</h4>
+                    <p>Leserinnlegg om saken.</p>
+                    <a href="https://1drv.ms/b/c/676e48f348ad513c/ESvXBFgHCbNBq7lXNVe5sJ0BfRzUpxyapb1SsPtZG_NP7A?e=U0qsRh" target="_blank" download>Last ned</a>
+                </div>
+
+                <div class="source-item">
+                    <h4>Brev fra ungdomsrådet</h4>
+                    <p>Uttalelse fra ungdomsrådet i Thornstad kommune.</p>
+                    <a href="https://1drv.ms/b/c/676e48f348ad513c/Ecs1vLm-HodFvnRkJygky8QB0i_EFq_7iGyxYcbAzT26bg?e=FsF9X4" target="_blank" download>Last ned</a>
+                </div>
+
+                <!-- Legg til flere kilder ved å kopiere "source-item" blokken ovenfor -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const nameInput = document.getElementById('nameInput');
+        const startButton = document.getElementById('startButton');
+        const userWelcome = document.getElementById('userWelcome');
+        const caseEditor = document.getElementById('caseEditor');
+        const saveCase = document.getElementById('saveCase');
+        const caseContent = document.getElementById('caseContent');
+        const sourceList = document.getElementById('sourceList');
+        const sourceTitleInput = document.getElementById('sourceTitleInput');
+        const sourceDescInput = document.getElementById('sourceDescInput');
+        const sourceLinkInput = document.getElementById('sourceLinkInput');
+        const addSourceButton = document.getElementById('addSourceButton');
+
+        // Check if user has visited before
+        function checkFirstVisit() {
+            const userName = localStorage.getItem('sladrespeilet_userName');
+            if (userName) {
+                welcomeScreen.style.display = 'none';
+                userWelcome.textContent = `Velkommen, ${userName}`;
+                loadSavedData();
+            } else {
+                welcomeScreen.style.display = 'flex';
+            }
+        }
+
+        // Save user name and continue to app
+        startButton.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (name) {
+                localStorage.setItem('sladrespeilet_userName', name);
+                userWelcome.textContent = `Velkommen, ${name}`;
+                welcomeScreen.style.display = 'none';
+                loadSavedData();
+            } else {
+                alert('Vennligst skriv inn navnet ditt.');
+            }
+        });
+
+        // Also trigger the start button when pressing Enter in the name field
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startButton.click();
+            }
+        });
+
+        // Save case content
+        saveCase.addEventListener('click', () => {
+            const caseText = caseEditor.value.trim();
+            if (caseText) {
+                localStorage.setItem('sladrespeilet_caseContent', caseText);
+                updateCaseDisplay(caseText);
+            } else {
+                alert('Vennligst skriv inn sakens innhold.');
+            }
+        });
+
+        // Update the case display
+        function updateCaseDisplay(content) {
+            caseContent.innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
+        }
+
+        // Add a new source
+        addSourceButton.addEventListener('click', () => {
+            const title = sourceTitleInput.value.trim();
+            const description = sourceDescInput.value.trim();
+            const link = sourceLinkInput.value.trim();
+            
+            if (title && description) {
+                addSource(title, description, link);
+                
+                // Clear inputs
+                sourceTitleInput.value = '';
+                sourceDescInput.value = '';
+                sourceLinkInput.value = '';
+                
+                // Save sources to localStorage
+                saveSources();
+            } else {
+                alert('Vennligst fyll inn både tittel og beskrivelse for kilden.');
+            }
+        });
+
+        // Add a source to the list
+        function addSource(title, description, link = '') {
+            const sourceItem = document.createElement('div');
+            sourceItem.className = 'source-item';
+            
+            sourceItem.innerHTML = `
+                <h4>${title}</h4>
+                <p>${description}</p>
+                ${link ? `<a href="${link}" target="_blank" download>Last ned</a>` : ''}
+                <button class="delete-source" data-title="${title}">Slett</button>
+            `;
+            
+            // Add delete functionality
+            const deleteButton = sourceItem.querySelector('.delete-source');
+            deleteButton.style.backgroundColor = '#e63946';
+            deleteButton.style.color = 'white';
+            deleteButton.style.border = 'none';
+            deleteButton.style.padding = '0.4rem 0.8rem';
+            deleteButton.style.borderRadius = '4px';
+            deleteButton.style.marginTop = '0.5rem';
+            deleteButton.style.cursor = 'pointer';
+            
+            deleteButton.addEventListener('click', function() {
+                sourceItem.remove();
+                saveSources();
+            });
+            
+            sourceList.appendChild(sourceItem);
+        }
+
+        // Save sources to localStorage
+        function saveSources() {
+            const sources = [];
+            const sourceItems = document.querySelectorAll('.source-item');
+            
+            sourceItems.forEach(item => {
+                const title = item.querySelector('h4').textContent;
+                const description = item.querySelector('p').textContent;
+                const linkElement = item.querySelector('a');
+                const link = linkElement ? linkElement.getAttribute('href') : '';
+                
+                sources.push({ title, description, link });
+            });
+            
+            localStorage.setItem('sladrespeilet_sources', JSON.stringify(sources));
+        }
+
+        // Load saved data from localStorage
+        function loadSavedData() {
+            // Load case content
+            const savedCase = localStorage.getItem('sladrespeilet_caseContent');
+            if (savedCase) {
+                caseEditor.value = savedCase;
+                updateCaseDisplay(savedCase);
+            }
+            
+            // Load sources
+            const savedSources = localStorage.getItem('sladrespeilet_sources');
+            if (savedSources) {
+                const sources = JSON.parse(savedSources);
+                sources.forEach(source => {
+                    addSource(source.title, source.description, source.link);
+                });
+            }
+        }
+
+        // Initialize the application
+        checkFirstVisit();
+    </script>
+</body>
+</html>
