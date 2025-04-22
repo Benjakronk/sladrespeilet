@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sladrespeilet - Journalistportal</title>
+    <link rel="icon" type="image/x-icon" href="https://1drv.ms/i/c/676e48f348ad513c/IQQZf5wyKG08SIHXsMQkaE93AZIPwv3UEJt4MOKrraf3_40?width=300">
     <style>
         :root {
             --primary-color: #1a4b8c;
@@ -299,7 +300,6 @@
     <!-- Main application -->
     <header class="header">
         <div class="logo">
-            <img src="https://1drv.ms/i/c/676e48f348ad513c/IQQZf5wyKG08SIHXsMQkaE93AZIPwv3UEJt4MOKrraf3_40?width=660">
             <!-- Hvis du vil beholde teksten ved siden av logoen, behold h1-taggen under -->
             <!-- Hvis du bare vil ha logo, fjern h1-taggen -->
             <h1>Sladrespeilet</h1>
@@ -315,6 +315,8 @@
                 <p>I kommunen planlegges det en ny ungdomsklubb kalt "Møteplassen" i den gamle brannstasjonen i sentrum.</p>
                 <p>Dette har skapt debatt i lokalmiljøet der både ungdom, politikere og naboer har ulike meninger og interesser.</p>
                 <p>Bruk kildene til høyre for å sette deg inn i saken, og skrive en tekst.</p>
+                <p>Det er lurt å ta notater når du går gjennom kildene.</p>
+                <img src="https://1drv.ms/i/c/676e48f348ad513c/IQQZf5wyKG08SIHXsMQkaE93AZIPwv3UEJt4MOKrraf3_40?width=300">
             </div>
         </div>
         
@@ -383,157 +385,56 @@
     </div>
 
     <script>
-        // DOM Elements
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        const nameInput = document.getElementById('nameInput');
-        const startButton = document.getElementById('startButton');
-        const userWelcome = document.getElementById('userWelcome');
-        const caseEditor = document.getElementById('caseEditor');
-        const saveCase = document.getElementById('saveCase');
-        const caseContent = document.getElementById('caseContent');
-        const sourceList = document.getElementById('sourceList');
-        const sourceTitleInput = document.getElementById('sourceTitleInput');
-        const sourceDescInput = document.getElementById('sourceDescInput');
-        const sourceLinkInput = document.getElementById('sourceLinkInput');
-        const addSourceButton = document.getElementById('addSourceButton');
+        // Vent til DOM er fullt lastet
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const nameInput = document.getElementById('nameInput');
+            const startButton = document.getElementById('startButton');
+            const userWelcome = document.getElementById('userWelcome');
 
-        // Check if user has visited before
-        function checkFirstVisit() {
-            const userName = localStorage.getItem('sladrespeilet_userName');
-            if (userName) {
-                welcomeScreen.style.display = 'none';
-                userWelcome.textContent = `Velkommen, ${userName}`;
-                loadSavedData();
-            } else {
-                welcomeScreen.style.display = 'flex';
+            // Sjekk at alle nødvendige elementer eksisterer
+            if (!welcomeScreen || !nameInput || !startButton || !userWelcome) {
+                console.error('En eller flere DOM-elementer mangler');
+                return; // Avbryt videre kjøring hvis elementer mangler
             }
-        }
 
-        // Save user name and continue to app
-        startButton.addEventListener('click', () => {
-            const name = nameInput.value.trim();
-            if (name) {
-                localStorage.setItem('sladrespeilet_userName', name);
-                userWelcome.textContent = `Velkommen, ${name}`;
-                welcomeScreen.style.display = 'none';
-                loadSavedData();
-            } else {
-                alert('Vennligst skriv inn navnet ditt.');
-            }
-        });
-
-        // Also trigger the start button when pressing Enter in the name field
-        nameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                startButton.click();
-            }
-        });
-
-        // Save case content
-        saveCase.addEventListener('click', () => {
-            const caseText = caseEditor.value.trim();
-            if (caseText) {
-                localStorage.setItem('sladrespeilet_caseContent', caseText);
-                updateCaseDisplay(caseText);
-            } else {
-                alert('Vennligst skriv inn sakens innhold.');
-            }
-        });
-
-        // Update the case display
-        function updateCaseDisplay(content) {
-            caseContent.innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
-        }
-
-        // Add a new source
-        addSourceButton.addEventListener('click', () => {
-            const title = sourceTitleInput.value.trim();
-            const description = sourceDescInput.value.trim();
-            const link = sourceLinkInput.value.trim();
-            
-            if (title && description) {
-                addSource(title, description, link);
+            // Check if user has visited before
+            function checkFirstVisit() {
+                const userName = localStorage.getItem('sladrespeilet_userName');
+                console.log('Lagret brukernavn:', userName); // For debugging
                 
-                // Clear inputs
-                sourceTitleInput.value = '';
-                sourceDescInput.value = '';
-                sourceLinkInput.value = '';
-                
-                // Save sources to localStorage
-                saveSources();
-            } else {
-                alert('Vennligst fyll inn både tittel og beskrivelse for kilden.');
+                if (userName && userName.trim() !== '') {
+                    welcomeScreen.style.display = 'none';
+                    userWelcome.textContent = `Velkommen, ${userName}`;
+                } else {
+                    welcomeScreen.style.display = 'flex';
+                }
             }
-        });
 
-        // Add a source to the list
-        function addSource(title, description, link = '') {
-            const sourceItem = document.createElement('div');
-            sourceItem.className = 'source-item';
-            
-            sourceItem.innerHTML = `
-                <h4>${title}</h4>
-                <p>${description}</p>
-                ${link ? `<a href="${link}" target="_blank" download>Last ned</a>` : ''}
-                <button class="delete-source" data-title="${title}">Slett</button>
-            `;
-            
-            // Add delete functionality
-            const deleteButton = sourceItem.querySelector('.delete-source');
-            deleteButton.style.backgroundColor = '#e63946';
-            deleteButton.style.color = 'white';
-            deleteButton.style.border = 'none';
-            deleteButton.style.padding = '0.4rem 0.8rem';
-            deleteButton.style.borderRadius = '4px';
-            deleteButton.style.marginTop = '0.5rem';
-            deleteButton.style.cursor = 'pointer';
-            
-            deleteButton.addEventListener('click', function() {
-                sourceItem.remove();
-                saveSources();
+            // Save user name and continue to app
+            startButton.addEventListener('click', () => {
+                const name = nameInput.value.trim();
+                if (name) {
+                    localStorage.setItem('sladrespeilet_userName', name);
+                    console.log('Lagrer brukernavn:', name); // For debugging
+                    userWelcome.textContent = `Velkommen, ${name}`;
+                    welcomeScreen.style.display = 'none';
+                } else {
+                    alert('Vennligst skriv inn navnet ditt.');
+                }
             });
-            
-            sourceList.appendChild(sourceItem);
-        }
 
-        // Save sources to localStorage
-        function saveSources() {
-            const sources = [];
-            const sourceItems = document.querySelectorAll('.source-item');
-            
-            sourceItems.forEach(item => {
-                const title = item.querySelector('h4').textContent;
-                const description = item.querySelector('p').textContent;
-                const linkElement = item.querySelector('a');
-                const link = linkElement ? linkElement.getAttribute('href') : '';
-                
-                sources.push({ title, description, link });
+            // Also trigger the start button when pressing Enter in the name field
+            nameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    startButton.click();
+                }
             });
-            
-            localStorage.setItem('sladrespeilet_sources', JSON.stringify(sources));
-        }
 
-        // Load saved data from localStorage
-        function loadSavedData() {
-            // Load case content
-            const savedCase = localStorage.getItem('sladrespeilet_caseContent');
-            if (savedCase) {
-                caseEditor.value = savedCase;
-                updateCaseDisplay(savedCase);
-            }
-            
-            // Load sources
-            const savedSources = localStorage.getItem('sladrespeilet_sources');
-            if (savedSources) {
-                const sources = JSON.parse(savedSources);
-                sources.forEach(source => {
-                    addSource(source.title, source.description, source.link);
-                });
-            }
-        }
-
-        // Initialize the application
-        checkFirstVisit();
+            // Initialize the application
+            checkFirstVisit();
+        });
     </script>
 </body>
 </html>
